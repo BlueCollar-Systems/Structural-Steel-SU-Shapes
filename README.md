@@ -37,3 +37,8 @@ Always verify final design/fabrication decisions with qualified engineering revi
 
 - Use the green **Code -> Download ZIP** button for the full pack.
 - Or use GitHub Releases for versioned downloads.
+
+## Integrity Verification
+
+- Checksums are published in [CHECKSUMS.md](CHECKSUMS.md).
+- New tagged releases (`v*`) automatically publish ZIP + `SHA256SUMS.txt` via GitHub Actions.

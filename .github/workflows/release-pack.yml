@@ -1,0 +1,36 @@
+name: release-pack
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Build release zip + checksum
+        id: pack
+        run: |
+          REPO="${GITHUB_REPOSITORY#*/}"
+          TAG="${GITHUB_REF_NAME}"
+          ZIP_NAME="${REPO}-${TAG}.zip"
+          git archive --format=zip --output "$ZIP_NAME" HEAD
+          sha256sum "$ZIP_NAME" | tee SHA256SUMS.txt
+          echo "zip_name=$ZIP_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: |
+            ${{ steps.pack.outputs.zip_name }}
+            SHA256SUMS.txt
