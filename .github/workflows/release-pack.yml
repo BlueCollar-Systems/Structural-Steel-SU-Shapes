@@ -21,9 +21,12 @@ jobs:
           REPO="${GITHUB_REPOSITORY#*/}"
           TAG="${GITHUB_REF_NAME}"
           ZIP_NAME="${REPO}-${TAG}.zip"
+          LATEST_ZIP="${REPO}-latest.zip"
           git archive --format=zip --output "$ZIP_NAME" HEAD
-          sha256sum "$ZIP_NAME" | tee SHA256SUMS.txt
+          cp "$ZIP_NAME" "$LATEST_ZIP"
+          sha256sum "$ZIP_NAME" "$LATEST_ZIP" | tee SHA256SUMS.txt
           echo "zip_name=$ZIP_NAME" >> "$GITHUB_OUTPUT"
+          echo "latest_zip=$LATEST_ZIP" >> "$GITHUB_OUTPUT"
 
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
@@ -33,4 +36,5 @@ jobs:
           generate_release_notes: true
           files: |
             ${{ steps.pack.outputs.zip_name }}
+            ${{ steps.pack.outputs.latest_zip }}
             SHA256SUMS.txt
